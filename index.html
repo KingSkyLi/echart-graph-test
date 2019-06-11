@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="./echarts.js">
+    </script>
+    <title>Echart Demo</title>
+    <style>
+        #myChart {
+            width: 100vw;
+            height: 100vh;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="myChart"></div>
+    <script>
+        var dom = document.getElementById('myChart');
+        var myChart = echarts.init(dom);
+        myChart.on('dblclick', (params) => {
+
+
+            let option = myChart.getOption();
+            let has = option.series[0].data.find(item => {
+                if (item.name === params.data.name) {
+                    return item;
+                }
+            })
+            if (has&&has.fouce) {
+                option.series[0].data.forEach(item => {
+                    if (item.fouce) {
+                        item.itemStyle = {
+                            borderWidth: 0,
+                        }
+                        item.fouce = false;
+                    }
+                });
+                myChart.setOption(option);
+                return;
+            }
+            let data = addNode(params);
+            option.series[0].data.forEach(item => {
+                if (item.fouce) {
+                    item.itemStyle = {
+                        borderWidth: 0,
+                    }
+                    item.fouce = false;
+                }
+                if (item.name === params.data.name) {
+                    item.fixed = true
+                    item.fouce = true;
+                    item.itemStyle = {
+                        borderColor: "green",
+                        borderWidth: 10
+                    }
+                }
+            })
+            option.series[0].data = [...option.series[0].data, ...data.data];
+            option.series[0].links = [...option.series[0].links, ...data.lines];
+            myChart.setOption(option);
+        })
+        var option = {
+            series: [{
+                type: 'graph',
+                coordinateSystem: null,
+                legendHoverLink: true,
+                hoverAnimation: true,
+                layout: 'force',
+                force: {
+                    initLayout: 'circular',
+                    repulsion: 500,
+                    gravity: 0.1,
+                    edgeLength: 300,
+                    layoutAnimation: true,
+                },
+                roam: 'move',
+                draggable: true,
+                focusNodeAdjacency: true,
+                symbol: 'circle',
+                symbolSize: 100,
+                itemStyle: {
+                    color: "blue",
+                    borderColor: '#000',
+                    borderWidth: 0,
+                    borderType: 'solid',
+                    opacity: 0.8
+                },
+                lineStyle: {
+                    color: 'yellow',
+                    width: 3,
+                    curveness: 0
+
+                },
+                label: {
+                    show: true,
+                    position: 'inside',
+                    align: 'center',
+                    verticalAlign: 'middle'
+                },
+                emphasis: {
+                    itemStyle: {
+                        color: 'red',
+                        opacity: 0.5,
+                    },
+                    label: {
+                        show: true
+                    }
+                },
+                categories: [{
+                    name: 'user'
+                }, {
+                    name: 'job'
+                }],
+                data: [{
+                    name: 'id1',
+                    fixed: false,
+                    value: '1',
+                    category: 0,
+                }, {
+                    name: 'id2',
+                    fixed: false,
+                    value: '2',
+                    category: 0,
+                }, {
+                    name: 'id3',
+                    fixed: false,
+                    value: '3',
+                    category: 0,
+                }, {
+                    name: 'id4',
+                    fixed: false,
+                    value: '4',
+                    category: 0,
+                }, {
+                    name: 'id5',
+                    fixed: false,
+                    value: '5',
+                    category: 0,
+                }, {
+                    name: 'id21',
+                    fixed: false,
+                    value: 1,
+                    category: 1,
+                }, {
+                    name: 'id22',
+                    fixed: false,
+                    value: 2,
+                    category: 1,
+                }],
+                links: [{
+                    source: 'id1',
+                    target: 'id21',
+                }, {
+                    source: 'id1',
+                    target: 'id2',
+                }, {
+                    source: 'id2',
+                    target: 'id3',
+                }, {
+                    source: 'id2',
+                    target: 'id4',
+                }]
+            }],
+            animationDuration: 10000,
+            animationDelay: 10000,
+            animationEasing: 'circularIn'
+        }
+        myChart.setOption(option);
+
+        function addNode(params) {
+            let data = params.data;
+            let name = data.name;
+            let n = parseInt(name.replace('id', ''));
+            let new_datas = [];
+            let new_lines = [];
+            for (let i = n; i <= (n + 3); i++) {
+                var obj = {
+                    name: 'id' + i * 100,
+                    fixed: false,
+                    value: i,
+                    category: data.category
+                }
+                var line = {
+                    source: name,
+                    target: obj.name
+                }
+                new_datas.push(obj);
+                new_lines.push(line);
+            }
+            return {
+                data: new_datas,
+                lines: new_lines
+            }
+        }
+    </script>
+</body>
+
+</html>
